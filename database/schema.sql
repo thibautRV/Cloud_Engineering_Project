@@ -13,4 +13,24 @@ CREATE DATABASE "Numeric Farm"
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
 
+CREATE TABLE sensors (
+    sensor_id SERIAL PRIMARY KEY,
+    type VARCHAR(255),
+    location VARCHAR(255)
+);
+
+CREATE TABLE readings (
+    reading_id SERIAL PRIMARY KEY,
+    sensor_id INTEGER REFERENCES sensors(sensor_id),
+    timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
+    value FLOAT
+);
+
+CREATE TABLE anomalies (
+    anomaly_id SERIAL PRIMARY KEY,
+    reading_id INTEGER REFERENCES readings(reading_id),
+    type VARCHAR(255),
+    details TEXT
+);
+
 
