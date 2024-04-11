@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    network_mode: host
+    environment:
+      - FLASK_PORT=5000
+    depends_on:
+      - db
+
+  data-processing-service:
+    build: ./data-processing-service
+    network_mode: host
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    network_mode: host
+    environment:
+      POSTGRES_DB: NumericFarm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: datasql78$
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata
