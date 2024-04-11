@@ -4,10 +4,10 @@ FROM python:3.8
 WORKDIR /app
 
 # Copie les fichiers requis pour l'installation des dépendances
-COPY requirements.txt ./requirements.txt
+COPY . .
 
 # Installe les dépendances
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie les fichiers de l'application Streamlit dans le conteneur
 COPY . /app
