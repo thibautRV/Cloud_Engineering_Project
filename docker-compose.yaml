@@ -1,60 +1,74 @@
 version: '3.8'
+
 services:
-  sensor1:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
+  api-gateway:
+    image: papyrgb/flask-sensor-app:latest
+    ports:
+      - "5000:5000"
     environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=1
-  sensor2:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
+      # Changed localhost to database service name for inter-container communication
+      - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
+    networks:
+      - app-network
+    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  data-processing-service:
+    image: papyrgb/data-processing-service:latest
     environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=2
-  sensor3:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
+      - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
+    networks:
+      - app-network
+    user: "1000:1000"
+    restart: always
+
+  dashboard:
+    image: papyrgb/dashboard-sensor-app:latest
+    ports:
+      - "3000:80"
+    networks:
+      - app-network
+    user: "1000:1000"
+    restart: always
+
+  database:
+    image: postgres:13
     environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=3
-  sensor4:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=4
-  sensor5:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=5
-  sensor6:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=6
-  sensor7:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=7
-  sensor8:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - SCENARIO_ID=8
-  sensorCustom:
-    image: abelfodil/sensor:0.0.1
-    network_mode: "host"
-    environment:
-      - SERVER_URL=http://localhost:8080/receive
-      - PLANT_ID=12
-      - SENSOR_ID=88712531
-      - SENSOR_VERSION=FR-v7
-      - PERIOD=2s
-      - MEASURES=temperature:285.15°K,temperature:286.15°K,humidity:12%
+      - POSTGRES_DB=NumericFarm
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=datasql78$$
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:

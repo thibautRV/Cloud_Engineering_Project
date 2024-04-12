@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine, text, Column, Integer, String, Float, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 
 # Database connection details
 HOST = 'localhost'
 PORT = '5432'
-DATABASE = 'Numeric Farm'
+DATABASE = 'NumericFarm'
 USER = 'postgres'
 PASSWORD = 'datasql78$'
 
