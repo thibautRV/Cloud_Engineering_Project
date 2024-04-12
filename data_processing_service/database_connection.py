@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 
 # Database connection details
-HOST = 'localhost'
+HOST = 'database'
 PORT = '5432'
 DATABASE = 'NumericFarm'
 USER = 'postgres'
@@ -12,6 +12,7 @@ PASSWORD = 'datasql78$'
 
 # Create the SQLAlchemy connection string
 DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+
 Base = declarative_base()
 
 class SensorData(Base):
