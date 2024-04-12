@@ -1,8 +1,15 @@
 import os
 from flask import Flask, request, jsonify  # Note that it should be 'request' with lowercase 'r'
-from data_processing_service.database_connection import add_sensor_data
 import base64
 import msgpack
+
+import sys
+original_sys_path = sys.path.copy() # Save the original sys.path
+sys.path.append("..") # Modify sys.path, adjust as necessary for your import
+# Perform import
+from data_processing_service.database_connection import add_sensor_data
+sys.path = original_sys_path    # Restore the original sys.path
+
 
 app = Flask(__name__)
 
