@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+  database:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=NumericFarm
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=datasql78$$
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=database
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api-gateway:
     image: papyrgb/flask-sensor-app:latest
     ports:
@@ -27,11 +49,11 @@ services:
         max-size: "200k"
         max-file: "10"
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    #healthcheck:
+      #test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+     # interval: 30s
+     # timeout: 10s
+     # retries: 3
 
   data-processing-service:
     image: papyrgb/data-processing-service:latest
@@ -41,6 +63,8 @@ services:
       - app-network
     user: "1000:1000"
     restart: always
+    depends_on:
+      - database
 
   dashboard:
     image: papyrgb/dashboard-sensor-app:latest
@@ -51,39 +75,18 @@ services:
     user: "1000:1000"
     restart: always
 
-  database:
-    image: postgres:13
-    environment:
-      - POSTGRES_DB=NumericFarm
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=datasql78$$
-      - POSTGRES_PORT=5432
-      - POSTGRES_HOST=database
-    volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   sensor-simulator:
     image: papyrgb/sensor-simulator:latest
     build: ./sensor-simulator
     environment:
-      - API_ENDPOINT=http://api-gateway:5000/api/sensors
+      - API_ENDPOINT=http://127.0.0.1:5000/collectData #http://api-gateway:5000/api/sensors
       - FREQUENCY_SECONDS=60
       - TEMPERATURE_RANGE=(20, 30)
       - HUMIDITY_RANGE=(30, 60)
     depends_on:
-      api-gateway:
-        condition: service_healthy
+      - api-gateway
+      #api-gateway:
+      #  condition: service_healthy
     networks:
       - app-network
     restart: always
