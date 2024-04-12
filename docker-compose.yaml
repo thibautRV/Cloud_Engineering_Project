@@ -75,21 +75,7 @@ services:
     user: "1000:1000"
     restart: always
 
-  sensor-simulator:
-    image: papyrgb/sensor-simulator:latest
-    build: ./sensor-simulator
-    environment:
-      - API_ENDPOINT=http://127.0.0.1:5000/collectData #http://api-gateway:5000/api/sensors
-      - FREQUENCY_SECONDS=60
-      - TEMPERATURE_RANGE=(20, 30)
-      - HUMIDITY_RANGE=(30, 60)
-    depends_on:
-      - api-gateway
-      #api-gateway:
-      #  condition: service_healthy
-    networks:
-      - app-network
-    restart: always
+
 
 networks:
   app-network:

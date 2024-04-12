@@ -21,7 +21,7 @@ from data_processing_service.database_connection import add_sensor_data
 sys.path = original_sys_path    
 
 # Use environment variables for configuration
-port = int(os.environ.get("FLASK_PORT", 5000))
+port = 8080#int(os.environ.get("FLASK_PORT", 5000))
 
 @app.route('/collectData', methods=['POST'])
 def collect_data():
@@ -45,7 +45,7 @@ def collect_data():
             measure_value=sensor_data['measure_value']
         )
 
-        return jsonify({"status": "success", "message": "Data received and stored successfully."}), 200
+        return jsonify({"status": "success", "message": "Data received and stored successfully."}), 201
     except (base64.binascii.Error, msgpack.exceptions.UnpackException):
         return jsonify({"status": "error", "message": "Invalid data format."}), 400
     except Exception as e:
