@@ -1,17 +1,24 @@
 import os
-from flask import Flask, request, jsonify  # Note that it should be 'request' with lowercase 'r'
+from flask import Flask, request, jsonify
 import base64
 import msgpack
-
 import sys
-original_sys_path = sys.path.copy() # Save the original sys.path
-sys.path.append("..") # Modify sys.path, adjust as necessary for your import
-# Perform import
-from data_processing_service.database_connection import add_sensor_data
-sys.path = original_sys_path    # Restore the original sys.path
+from sqlalchemy import create_engine, text
 
+# Assuming you've correctly set up the environment variables or defined them here.
+DATABASE_URI = os.environ.get("DATABASE_URI", "postgresql://postgres:datasql78$$@database:5432/NumericFarm")
 
 app = Flask(__name__)
+engine = create_engine(DATABASE_URI)
+
+# Save the original sys.path
+original_sys_path = sys.path.copy()
+# Modify sys.path, adjust as necessary for your import
+sys.path.append("..")
+# Perform import
+from data_processing_service.database_connection import add_sensor_data
+# Restore the original sys.path
+sys.path = original_sys_path    
 
 # Use environment variables for configuration
 port = int(os.environ.get("FLASK_PORT", 5000))
@@ -29,8 +36,7 @@ def collect_data():
         # Unpack data from msgpack
         sensor_data = msgpack.unpackb(decoded_data, raw=False)
 
-        # Here we assume that sensor_data is a dictionary that contains all the necessary fields.
-        # You need to adapt this part to match the structure of your actual sensor data.
+        # Assume sensor_data is a dictionary with necessary fields
         add_sensor_data(
             sensor_id=sensor_data['sensor_id'],
             plant_id=sensor_data['plant_id'],
@@ -45,6 +51,16 @@ def collect_data():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    try:
+        # Try to fetch a simple data point from the database
+        with engine.connect() as connection:
+            result = connection.execute(text("SELECT 1"))
+            result.fetchone()
+            return jsonify({"status": "success", "message": "API and database are healthy."}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)

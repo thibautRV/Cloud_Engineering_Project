@@ -28,10 +28,11 @@ services:
         max-file: "10"
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:5000/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 40s
 
   data-processing-service:
     image: papyrgb/data-processing-service:latest
@@ -57,6 +58,8 @@ services:
       - POSTGRES_DB=NumericFarm
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=datasql78$$
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=database
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d
@@ -66,10 +69,25 @@ services:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  sensor-simulator:
+    image: papyrgb/sensor-simulator:latest
+    build: ./sensor-simulator
+    environment:
+      - API_ENDPOINT=http://api-gateway:5000/api/sensors
+      - FREQUENCY_SECONDS=60
+      - TEMPERATURE_RANGE=(20, 30)
+      - HUMIDITY_RANGE=(30, 60)
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: always
 
 networks:
   app-network:
