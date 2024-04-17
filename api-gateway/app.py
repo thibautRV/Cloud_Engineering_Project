@@ -36,11 +36,10 @@ def collect_data():
         # Unpack data from msgpack
         sensor_data = msgpack.unpackb(decoded_data, raw=False)
 
-        # Assume sensor_data is a dictionary with necessary fields
-        add_sensor_data(
-            sensor_id=request.sensor_id,
-            plant_id=request.plant_id,
-        )
+#        add_sensor_data(
+ #           sensor_id=request.sensor_id,
+  #          plant_id=request.plant_id,
+   #     )
 
         return jsonify({"status": "success", "message": "Data received and stored successfully."}), 201
     except (base64.binascii.Error, msgpack.exceptions.UnpackException):

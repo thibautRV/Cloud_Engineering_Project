@@ -23,10 +23,7 @@ class SensorData(Base):
     id = Column(Integer, primary_key=True)
     sensor_id = Column(String)
     plant_id = Column(Integer)
-    sensor_version = Column(String)
-    measure_type = Column(String)
-    measure_value = Column(Float)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=datetime.now(datetime.UTC))
 
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
