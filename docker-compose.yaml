@@ -75,6 +75,110 @@ services:
     user: "1000:1000"
     restart: always
 
+  sensor1:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=1
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor2:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=2
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor3:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=3
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor4:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=4
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor5:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=5
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor6:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=6
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor7:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=7
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensor8:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - SCENARIO_ID=8
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+  sensorCustom:
+    image: abelfodil/sensor:0.0.1
+    networks:
+      - app-network
+    environment:
+      - SERVER_URL=http://api-gateway:5000/collectData
+      - PLANT_ID=12
+      - SENSOR_ID=88712531
+      - SENSOR_VERSION=FR-v7
+      - PERIOD=2s
+      - MEASURES=temperature:285.15°K,temperature:286.15°K,humidity:12%
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
+
 
 
 networks:

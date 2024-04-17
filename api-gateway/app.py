@@ -38,11 +38,8 @@ def collect_data():
 
         # Assume sensor_data is a dictionary with necessary fields
         add_sensor_data(
-            sensor_id=sensor_data['sensor_id'],
-            plant_id=sensor_data['plant_id'],
-            sensor_version=sensor_data['sensor_version'],
-            measure_type=sensor_data['measure_type'],
-            measure_value=sensor_data['measure_value']
+            sensor_id=request.sensor_id,
+            plant_id=request.plant_id,
         )
 
         return jsonify({"status": "success", "message": "Data received and stored successfully."}), 201

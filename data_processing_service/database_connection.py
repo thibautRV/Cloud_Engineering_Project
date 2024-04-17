@@ -47,10 +47,10 @@ def session_scope():
     finally:
         session.close()
 
-def add_sensor_data(sensor_id, plant_id, sensor_version, measure_type, measure_value):
+def add_sensor_data(sensor_id, plant_id):#, sensor_version, measure_type, measure_value):
     with session_scope() as session:
-        new_data = SensorData(sensor_id=sensor_id, plant_id=plant_id, sensor_version=sensor_version,
-                            measure_type=measure_type, measure_value=measure_value)
+        new_data = SensorData(sensor_id=sensor_id, plant_id=plant_id)#, sensor_version=sensor_version,
+                            #measure_type=measure_type, measure_value=measure_value)
         session.add(new_data)
 
 def delete_sensor_data(id):
