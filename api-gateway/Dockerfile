@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/api-gateway/requirements.txt
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000

@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Installe les dépendances
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/dashboard/requirements.txt
 
 # Copie les fichiers de l'application Streamlit dans le conteneur
 COPY . /app
