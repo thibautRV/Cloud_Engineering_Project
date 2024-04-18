@@ -34,6 +34,7 @@ services:
       - ./data_processing_service:/usr/src/app/data_processing_service
     depends_on:
       - database
+      - data-processing-service
     environment:
       - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
     networks:
@@ -75,6 +76,10 @@ services:
       - app-network
     user: "1000:1000"
     restart: always
+    depends_on:
+      - database
+      - api-gateway
+      - data-processing-service
 
   sensor1:
     image: abelfodil/sensor:0.0.1
