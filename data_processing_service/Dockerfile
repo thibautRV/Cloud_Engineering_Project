@@ -10,5 +10,11 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/data_processing_service/requirements.txt
 
+# Make port 1000 available to the world outside this container
+EXPOSE 1000
+
+# Set the PYTHONPATH to include the working directory
+ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app"
+
 # Run database_connection.py when the container launches
 CMD ["database_connection.py"]
