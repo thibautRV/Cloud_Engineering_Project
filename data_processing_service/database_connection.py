@@ -15,8 +15,6 @@ DATABASE = quote_plus(os.getenv('POSTGRES_DB', 'NumericFarm'))
 
 DATABASE_URI = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
 
-print("Database URI:", DATABASE_URI)  # Debug print to check the URI
-
 Base = declarative_base()
 
 class SensorData(Base):
@@ -45,5 +43,20 @@ def session_scope():
     finally:
         session.close()
 
+def add_sensor_data(sensor_id, plant_id):#, sensor_version, measure_type, measure_value):
+    with session_scope() as session:
+        new_data = SensorData(sensor_id=sensor_id, plant_id=plant_id)#, sensor_version=sensor_version,
+                            #measure_type=measure_type, measure_value=measure_value)
+        session.add(new_data)
+
+def delete_sensor_data(id):
+    session = Session()
+    data = session.query(SensorData).filter(SensorData.id == id).first()
+    if data:
+        session.delete(data)
+        session.commit()
+    session.close()
+
+# Initialiser la base de données au premier lancement
 if __name__ == "__main__":
     init_db()
