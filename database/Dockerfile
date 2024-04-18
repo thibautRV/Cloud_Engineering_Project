@@ -9,8 +9,10 @@ ENV POSTGRES_DB=NumericFarm
 # Exposer le port (5432 est le port par défaut de PostgreSQL)
 EXPOSE 5432
 
-# Copier le fichier schema.sql dans le dossier /docker-entrypoint-initdb.d
-# pour qu'il soit exécuté lors de l'initialisation de la base de données
-COPY https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/database/schema.sql /docker-entrypoint-initdb.d/
+# Install curl if it's not already in the image
+RUN apt-get update && apt-get install -y curl
+
+# Download the schema.sql file into the docker-entrypoint-initdb.d directory
+RUN curl -o /docker-entrypoint-initdb.d/schema.sql https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/database/schema.sql
 
 # Aucune commande CMD n'est nécessaire ici, car nous utilisons les comportements par défaut de l'image postgres
