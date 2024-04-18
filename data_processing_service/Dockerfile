@@ -10,8 +10,5 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/data_processing_service/requirements.txt
 
-# Set the PYTHONPATH to include the working directory
-ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app"
-
 # Run database_connection.py when the container launches
-CMD ["python", "database_connection.py"]
+CMD ["database_connection.py"]

@@ -36,6 +36,7 @@ def collect_data():
         # Unpack data from msgpack
         sensor_data = msgpack.unpackb(decoded_data, raw=False)
 
+        print(sensor_data)
 #        add_sensor_data(
  #           sensor_id=request.sensor_id,
   #          plant_id=request.plant_id,
