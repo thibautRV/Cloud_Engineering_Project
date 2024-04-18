@@ -1,22 +1,21 @@
-from sqlalchemy import create_engine, text, Column, Integer, String, Float, DateTime
-#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from urllib.parse import quote_plus
 import os
+from datetime import datetime
 from contextlib import contextmanager
 
+# Encoding all parts of the URI that could potentially contain special characters
+USER = quote_plus(os.getenv('POSTGRES_USER', 'postgres'))
+PASSWORD = quote_plus(os.getenv('POSTGRES_PASSWORD', 'datasql'))
+HOST = quote_plus(os.getenv('POSTGRES_HOST', 'database'))
+PORT = quote_plus(os.getenv('POSTGRES_PORT', '5432'))
+DATABASE = quote_plus(os.getenv('POSTGRES_DB', 'NumericFarm'))
 
-# Environment variables should be set in your Docker container or environment configuration
-HOST = os.getenv('POSTGRES_HOST', 'database')
-PORT = os.getenv('POSTGRES_PORT', '5432')
-DATABASE = os.getenv('POSTGRES_DB', 'NumericFarm')
-USER = os.getenv('POSTGRES_USER', 'postgres')
-PASSWORD = os.getenv('POSTGRES_PASSWORD', 'datasql78$')
+DATABASE_URI = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
 
-# Create the SQLAlchemy connection string
-DATABASE_URI = "postgresql://postgres:datasql78$$@database:5432/NumericFarm"
-#f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+print("Database URI:", DATABASE_URI)  # Debug print to check the URI
 
 Base = declarative_base()
 
@@ -35,32 +34,16 @@ def init_db():
 
 @contextmanager
 def session_scope():
-    """Provide a transactional scope around a series of operations."""
     session = Session()
     try:
         yield session
         session.commit()
     except SQLAlchemyError as e:
         session.rollback()
-        print(f"Database error occurred: {e}")  # More specific error logging
+        print(f"Database error occurred: {e}")
         raise
     finally:
         session.close()
 
-def add_sensor_data(sensor_id, plant_id):#, sensor_version, measure_type, measure_value):
-    with session_scope() as session:
-        new_data = SensorData(sensor_id=sensor_id, plant_id=plant_id)#, sensor_version=sensor_version,
-                            #measure_type=measure_type, measure_value=measure_value)
-        session.add(new_data)
-
-def delete_sensor_data(id):
-    session = Session()
-    data = session.query(SensorData).filter(SensorData.id == id).first()
-    if data:
-        session.delete(data)
-        session.commit()
-    session.close()
-
-# Initialiser la base de données au premier lancement
 if __name__ == "__main__":
     init_db()
