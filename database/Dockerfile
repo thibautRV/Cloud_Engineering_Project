@@ -11,6 +11,6 @@ EXPOSE 5432
 
 # Copier le fichier schema.sql dans le dossier /docker-entrypoint-initdb.d
 # pour qu'il soit exécuté lors de l'initialisation de la base de données
-COPY schema.sql /docker-entrypoint-initdb.d/
+COPY https://raw.githubusercontent.com/thibautRV/Cloud_Engineering_Project/main/database/schema.sql /docker-entrypoint-initdb.d/
 
 # Aucune commande CMD n'est nécessaire ici, car nous utilisons les comportements par défaut de l'image postgres
