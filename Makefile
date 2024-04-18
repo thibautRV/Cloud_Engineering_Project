@@ -20,25 +20,25 @@ all: $(IMAGE1) $(IMAGE2) $(IMAGE3) $(IMAGE4)
 
 $(IMAGE1):
 	@echo "Building $(IMAGE1)"
-	@docker build -f $(DOCKERFILE1) -t $(IMAGE1) .
+	@docker build --no-cache -f $(DOCKERFILE1) -t $(IMAGE1) .
 	@docker tag $(IMAGE1) $(DOCKER_USER)/$(IMAGE1):latest
 	@docker push $(DOCKER_USER)/$(IMAGE1):latest
 
 $(IMAGE2):
 	@echo "Building $(IMAGE2)"
-	@docker build -f $(DOCKERFILE2) -t $(IMAGE2) .
+	@docker build --no-cache -f $(DOCKERFILE2) -t $(IMAGE2) .
 	@docker tag $(IMAGE2) $(DOCKER_USER)/$(IMAGE2):latest
 	@docker push $(DOCKER_USER)/$(IMAGE2):latest
 
 $(IMAGE3):
 	@echo "Building $(IMAGE3)"
-	@docker build -f $(DOCKERFILE3) -t $(IMAGE3) .
+	@docker build --no-cache -f $(DOCKERFILE3) -t $(IMAGE3) .
 	@docker tag $(IMAGE3) $(DOCKER_USER)/$(IMAGE3):latest
 	@docker push $(DOCKER_USER)/$(IMAGE3):latest
 
 $(IMAGE4):
 	@echo "Building $(IMAGE4)"
-	@docker build -f $(DOCKERFILE4) -t $(IMAGE4) .
+	@docker build --no-cache -f $(DOCKERFILE4) -t $(IMAGE4) .
 	@docker tag $(IMAGE4) $(DOCKER_USER)/$(IMAGE4):latest
 	@docker push $(DOCKER_USER)/$(IMAGE4):latest
 
