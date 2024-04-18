@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, text, Column, Integer, String, Float, DateTime
 #from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 import os
 from contextlib import contextmanager
@@ -14,7 +15,8 @@ USER = os.getenv('POSTGRES_USER', 'postgres')
 PASSWORD = os.getenv('POSTGRES_PASSWORD', 'datasql78$')
 
 # Create the SQLAlchemy connection string
-DATABASE_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+DATABASE_URI = "postgresql://postgres:datasql78$$@database:5432/NumericFarm"
+#f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
 
 Base = declarative_base()
 
@@ -38,8 +40,9 @@ def session_scope():
     try:
         yield session
         session.commit()
-    except:
+    except SQLAlchemyError as e:
         session.rollback()
+        print(f"Database error occurred: {e}")  # More specific error logging
         raise
     finally:
         session.close()
