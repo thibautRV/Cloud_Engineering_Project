@@ -61,6 +61,8 @@ services:
     image: papyrgb/data-processing-service:latest
     environment:
       - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
+    volumes:
+      - ./data_processing_service:/usr/src/app/data_processing_service
     networks:
       - app-network
     user: "1000:1000"
