@@ -13,8 +13,5 @@ RUN pip install --no-cache-dir -r https://raw.githubusercontent.com/thibautRV/Cl
 # Make port 1000 available to the world outside this container
 EXPOSE 1000
 
-# Set the PYTHONPATH to include the working directory
-#ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app/data_processing_service"
-
 # Run database_connection.py when the container launches
 CMD ["python", "database_connection.py"]
