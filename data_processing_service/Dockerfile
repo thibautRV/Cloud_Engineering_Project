@@ -17,4 +17,4 @@ EXPOSE 1000
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app/data_processing_service"
 
 # Run database_connection.py when the container launches
-CMD ["database_connection.py"]
+CMD ["python", "database_connection.py"]
