@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:latest
 
 # Définit le répertoire de travail dans le conteneur
 WORKDIR /app
