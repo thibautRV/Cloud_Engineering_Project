@@ -31,7 +31,7 @@ CREATE TABLE plants (
 CREATE TABLE readings (
     reading_id SERIAL PRIMARY KEY,
     sensor_id INTEGER REFERENCES sensors(sensor_id),
-    sensor_version VARCHAR
+    sensor_version VARCHAR,
     plant_id INTEGER REFERENCES plants(plant_id),
     timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     measures JSON
