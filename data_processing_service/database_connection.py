@@ -13,7 +13,8 @@ HOST = quote_plus(os.getenv('POSTGRES_HOST', 'database'))
 PORT = quote_plus(os.getenv('POSTGRES_PORT', '5432'))
 DATABASE = quote_plus(os.getenv('POSTGRES_DB', 'NumericFarm'))
 
-DATABASE_URI = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
+DATABASE_URI = "postgresql://postgres:datasql@database:5432/NumericFarm"
+#f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
 
 Base = declarative_base()
 
@@ -58,5 +59,26 @@ def delete_sensor_data(id):
     session.close()
 
 # Initialiser la base de données au premier lancement
+import time
+import psycopg2
+from psycopg2 import OperationalError
+
 if __name__ == "__main__":
-    init_db()
+    #init_db()
+    def create_conn():
+        conn = None
+        while not conn:
+            try:
+                conn = psycopg2.connect(
+                    dbname="NumericFarm",
+                    user="postgres",
+                    password="datasql",
+                    host="database"
+                )
+                print("Database connection successful")
+            except OperationalError as e:
+                print(e)
+                time.sleep(5)
+        return conn
+
+    conn = create_conn()
