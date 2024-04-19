@@ -114,7 +114,7 @@ services:
   anomaly-detection:
     image: papyrgb/anomaly-detection:latest
     build:
-      context: ./anomaly-detection
+      context: ./anomaly_detection
     depends_on:
       database:
         condition: service_healthy
