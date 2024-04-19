@@ -1,3 +1,4 @@
 sqlalchemy
 datetime
 psycopg2-binary
+flask

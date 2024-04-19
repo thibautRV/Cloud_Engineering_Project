@@ -58,10 +58,43 @@ def delete_sensor_data(id):
         session.commit()
     session.close()
 
+
 # Initialiser la base de données au premier lancement
 import time
 import psycopg2
 from psycopg2 import OperationalError
+from flask import Flask, jsonify
+app = Flask(__name__)
 
-if __name__ == "__main__":
-    init_db()
+def healthcheck_logic():
+    conn = None
+    while not conn:
+        try:
+            conn = psycopg2.connect(
+                dbname="NumericFarm",
+                user="postgres",
+                password="datasql",
+                host="database"
+            )
+            print("Database connection successful")
+        except OperationalError as e:
+            print(e)
+            time.sleep(5)
+    return True
+
+@app.route('/health', methods=['GET'])
+def healthcheck():
+    if healthcheck_logic():
+        return jsonify({"status": "healthy"}), 200
+    else:
+        return jsonify({"status": "unhealthy"}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=1000)
+
+
+
+#if __name__ == "__main__":
+    #init_db()
+    #conn = create_conn()
+    

@@ -22,6 +22,28 @@ services:
       retries: 5
 
 
+  data-processing-service:
+    image: papyrgb/data-processing-service:latest
+    environment:
+      - DATABASE_URI=postgresql://postgres:datasql@database:5432/NumericFarm
+    volumes:
+      - ./data_processing_service:/usr/src/app/data_processing_service/
+    networks:
+      - app-network
+    user: "1000:1000"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+        required: true
+        restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:1000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
   api-gateway:
     image: papyrgb/flask-sensor-app:latest
     ports:
@@ -32,11 +54,10 @@ services:
       - ./data_processing_service:/usr/src/app/data_processing_service
     depends_on:
       database:
-        condition: service_completed_successfully
+        condition: service_healthy
         required: true
-        restart: true
       data-processing-service:
-        condition: service_completed_successfully
+        condition: service_healthy
         required: true
         restart: true
     environment:
@@ -61,21 +82,6 @@ services:
      # timeout: 10s
      # retries: 3
 
-  data-processing-service:
-    image: papyrgb/data-processing-service:latest
-    environment:
-      - DATABASE_URI=postgresql://postgres:datasql@database:5432/NumericFarm
-    volumes:
-      - ./data_processing_service:/usr/src/app/data_processing_service/
-    networks:
-      - app-network
-    user: "1000:1000"
-    restart: always
-    depends_on:
-      database:
-        condition: service_completed_successfully
-        required: true
-        restart: true
 
 #  dashboard:
 #    image: papyrgb/dashboard-sensor-app:latest
@@ -89,6 +95,7 @@ services:
 #      - database
 #      - api-gateway
 #      - data-processing-service
+
 
   sensor1:
     image: abelfodil/sensor:0.0.1
