@@ -6,6 +6,13 @@ import os
 from datetime import datetime
 from contextlib import contextmanager
 
+import time
+import psycopg2
+from psycopg2 import OperationalError
+from flask import Flask, jsonify
+app = Flask(__name__)
+
+
 # Encoding all parts of the URI that could potentially contain special characters
 USER = quote_plus(os.getenv('POSTGRES_USER', 'postgres'))
 PASSWORD = quote_plus(os.getenv('POSTGRES_PASSWORD', 'datasql'))
@@ -13,19 +20,27 @@ HOST = quote_plus(os.getenv('POSTGRES_HOST', 'database'))
 PORT = quote_plus(os.getenv('POSTGRES_PORT', '5432'))
 DATABASE = quote_plus(os.getenv('POSTGRES_DB', 'NumericFarm'))
 
-DATABASE_URI = "postgresql://postgres:datasql@database:5432/NumericFarm"
-#f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
+DATABASE_URI = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
+#"postgresql://postgres:datasql@database:5432/NumericFarm"
 
+
+# Declare the base
 Base = declarative_base()
 
+# Define the SensorData model
 class SensorData(Base):
     __tablename__ = 'sensor_data'
-    id = Column(Integer, primary_key=True)
+    reading_id = Column(Integer, primary_key=True)
     sensor_id = Column(String)
+    sensor_version = Column(String)
     plant_id = Column(Integer)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    measures = Column(dict)  # Assuming measures is intended to be stored as a JSON-like structure
+    
+# Initialize the engine with the database URI
+engine = create_engine(DATABASE_URI, echo=True)  # Set echo=True for debug
 
-engine = create_engine(DATABASE_URI)
+# Create a sessionmaker bound to the engine
 Session = sessionmaker(bind=engine)
 
 def init_db():
@@ -44,28 +59,6 @@ def session_scope():
     finally:
         session.close()
 
-def add_sensor_data(sensor_id, plant_id):#, sensor_version, measure_type, measure_value):
-    with session_scope() as session:
-        new_data = SensorData(sensor_id=sensor_id, plant_id=plant_id)#, sensor_version=sensor_version,
-                            #measure_type=measure_type, measure_value=measure_value)
-        session.add(new_data)
-
-def delete_sensor_data(id):
-    session = Session()
-    data = session.query(SensorData).filter(SensorData.id == id).first()
-    if data:
-        session.delete(data)
-        session.commit()
-    session.close()
-
-
-# Initialiser la base de données au premier lancement
-import time
-import psycopg2
-from psycopg2 import OperationalError
-from flask import Flask, jsonify
-app = Flask(__name__)
-
 def healthcheck_logic():
     conn = None
     while not conn:
@@ -82,6 +75,11 @@ def healthcheck_logic():
             time.sleep(5)
     return True
 
+
+@app.before_first_request
+def initialize_database():
+    init_db()
+
 @app.route('/health', methods=['GET'])
 def healthcheck():
     if healthcheck_logic():
@@ -89,12 +87,31 @@ def healthcheck():
     else:
         return jsonify({"status": "unhealthy"}), 500
 
+@app.route('/add_sensor_data', methods=['POST'])
+def add_sensor_data(data):
+    with session_scope() as session:
+        new_data = SensorData(
+                sensor_id=data["sensor_id"],
+                sensor_version=data["sensor_version"],
+                plant_id=data["plant_id"],
+                time=data["time"],
+                measures=data["measures"]
+                )
+        session.add(new_data)
+    return jsonify({"message": "Data added successfully"}), 201
+
+@app.route('/del_sensor_data', methods=['DELETE'])
+def delete_sensor_data(id):
+    with session_scope() as session:
+        data = session.query(SensorData).filter(SensorData.id == id).first()
+        if data:
+            session.delete(data)
+            session.commit()
+            return jsonify({"message": "Data deleted successfully"}), 200
+        else:
+            return jsonify({"error": "Data not found"}), 404
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1000)
-
-
-
-#if __name__ == "__main__":
-    #init_db()
-    #conn = create_conn()
+    app.run(debug=True, host='0.0.0.0', port=1000)
     

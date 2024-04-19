@@ -4,9 +4,12 @@ import base64
 import msgpack
 import sys
 from sqlalchemy import create_engine, text
+import requests
+import json
 
 # Assuming you've correctly set up the environment variables or defined them here.
 DATABASE_URI = os.environ.get("DATABASE_URI", "postgresql://postgres:datasql78$$@database:5432/NumericFarm")
+SERVER_URI = os.environ.get("SERVER_URI")
 
 app = Flask(__name__)
 engine = create_engine(DATABASE_URI)
@@ -23,6 +26,22 @@ sys.path = original_sys_path
 # Use environment variables for configuration
 port = 8080#int(os.environ.get("FLASK_PORT", 5000))
 
+def send_sensor_data(sensor_data, url=SERVER_URI):
+    # URL of the endpoint
+    url += "add_sensor_data"
+
+    # Ensure the data is in JSON format
+    headers = {'Content-Type': 'application/json'}
+
+    # Convert the data dictionary to JSON string
+    response = requests.post(url, data=json.dumps(sensor_data), headers=headers)
+
+    # Check response status and act accordingly
+    if response.status_code == 200:
+        print("Data successfully posted.")
+    else:
+        print(f"Failed to post data. Status code: {response.status_code}, Response: {response.text}")
+
 @app.route('/collectData', methods=['POST'])
 def collect_data():
     try:
@@ -37,10 +56,13 @@ def collect_data():
         sensor_data = msgpack.unpackb(decoded_data, raw=False)
 
         print(sensor_data)
-#        add_sensor_data(
- #           sensor_id=request.sensor_id,
-  #          plant_id=request.plant_id,
-   #     )
+        send_sensor_data(sensor_data)
+
+#{'sensor_id': '746312', 
+#'sensor_version': 'FR-v8', 
+#'plant_id': 1, 
+#'time': '2024-04-19T19:36:52Z', 
+#'measures': {'humidite': '12%', 'temperature': '12°C'}}
 
         return jsonify({"status": "success", "message": "Data received and stored successfully."}), 201
     except (base64.binascii.Error, msgpack.exceptions.UnpackException):

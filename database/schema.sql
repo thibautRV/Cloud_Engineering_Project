@@ -29,16 +29,17 @@ CREATE TABLE plants (
 );
 
 CREATE TABLE readings (
-    reading_id NOT NULL SERIAL PRIMARY KEY,
+    reading_id SERIAL PRIMARY KEY,
     sensor_id INTEGER REFERENCES sensors(sensor_id),
+    sensor_version VARCHAR
     plant_id INTEGER REFERENCES plants(plant_id),
     timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     measures JSON
 );
 
 CREATE TABLE anomalies (
-    anomaly_id NOT NULL SERIAL PRIMARY KEY,
-    reading_id NOT NULL INTEGER REFERENCES readings(reading_id),
+    anomaly_id SERIAL PRIMARY KEY,
+    reading_id INTEGER REFERENCES readings(reading_id),
     type VARCHAR(255),
     details JSON
 );

@@ -24,6 +24,10 @@ services:
 
   data-processing-service:
     image: papyrgb/data-processing-service:latest
+    ports:
+      - "1000:1000"
+    build:
+      context: ./data_processing_service
     environment:
       - DATABASE_URI=postgresql://postgres:datasql@database:5432/NumericFarm
     volumes:
@@ -62,6 +66,7 @@ services:
         restart: true
     environment:
       - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
+      - SERVER_URI=http://data-processing-service:1000/
     networks:
       - app-network
     user: "1000:1000"
