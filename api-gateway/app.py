@@ -73,11 +73,16 @@ def collect_data():
 @app.route('/health', methods=['GET'])
 def health_check():
     try:
-        # Try to fetch a simple data point from the database
-        with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            result.fetchone()
-            return jsonify({"status": "success", "message": "API and database are healthy."}), 200
+        send_sensor_data(
+                {
+                'sensor_id': '746312', 
+                'sensor_version': 'FR-v8', 
+                'plant_id': 1, 
+                'time': '2024-04-19T19:36:52Z', 
+                'measures': {'humidite': '12%', 'temperature': '12°C'}
+                }
+                         )
+        return jsonify({"status": "success", "message": "API and database are healthy."}), 201
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
