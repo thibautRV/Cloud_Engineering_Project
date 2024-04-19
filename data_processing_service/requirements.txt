@@ -1,4 +1,4 @@
 sqlalchemy
 datetime
 psycopg2-binary
-flask
+flask>=2.2.5
