@@ -1,5 +1,5 @@
 # Use an official Python runtime as a base image
-FROM python:latest
+FROM python:3.11.9-bullseye
 
 # Set the working directory in the container
 WORKDIR /usr/src/app

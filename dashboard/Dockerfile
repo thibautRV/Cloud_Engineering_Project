@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.11.9-bullseye
 
 # Définit le répertoire de travail dans le conteneur
 WORKDIR /app
