@@ -67,6 +67,7 @@ services:
     environment:
       - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
       - SERVER_URI=http://data-processing-service:1000/
+      - NODE_ENV=production
     networks:
       - app-network
     user: "1000:1000"
@@ -88,18 +89,43 @@ services:
      # retries: 3
 
 
-#  dashboard:
-#    image: papyrgb/dashboard-sensor-app:latest
-#    ports:
-#      - "3000:80"
-#    networks:
-#      - app-network
-#    user: "1000:1000"
-#    restart: always
-#    depends_on:
-#      - database
-#      - api-gateway
-#      - data-processing-service
+  dashboard:
+    image: papyrgb/dashboard-sensor-app:latest
+    build: ./dashboard
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "8501:8501"
+    networks:
+      - app-network
+    user: "1000:1000"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+        required: true
+      api-gateway:
+        condition: service_healthy
+        required: true
+      data-processing-service:
+        condition: service_healthy
+        required: true
+
+  anomaly-detection:
+    build:
+      context: ./anomaly-detection
+    depends_on:
+      database:
+        condition: service_healthy
+        required: true
+      api-gateway:
+        condition: service_healthy
+        required: true
+      data-processing-service:
+        condition: service_healthy
+        required: true
+    environment:
+      DATABASE_URL: postgresql://postgres:datasql78$$@database:5432/NumericFarm
 
 
   sensor1:
