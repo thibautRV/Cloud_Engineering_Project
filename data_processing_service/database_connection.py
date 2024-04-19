@@ -10,8 +10,6 @@ import time
 import psycopg2
 from psycopg2 import OperationalError
 from flask import Flask, jsonify
-app = Flask(__name__)
-
 
 # Encoding all parts of the URI that could potentially contain special characters
 USER = quote_plus(os.getenv('POSTGRES_USER', 'postgres'))
@@ -75,10 +73,15 @@ def healthcheck_logic():
             time.sleep(5)
     return True
 
+def create_app():
+    app = Flask(__name__)
 
-@app.before_first_request
-def initialize_database():
-    init_db()
+    with app.app_context():
+        init_db()
+
+    return app
+
+app = create_app()
 
 @app.route('/health', methods=['GET'])
 def healthcheck():
