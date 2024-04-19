@@ -9,7 +9,7 @@ from contextlib import contextmanager
 import time
 import psycopg2
 from psycopg2 import OperationalError
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 # Encoding all parts of the URI that could potentially contain special characters
 USER = quote_plus(os.getenv('POSTGRES_USER', 'postgres'))
@@ -91,13 +91,14 @@ def healthcheck():
         return jsonify({"status": "unhealthy"}), 500
 
 @app.route('/add_sensor_data', methods=['POST'])
-def add_sensor_data(data):
+def add_sensor_data():
+    data = request.json
     with session_scope() as session:
         new_data = SensorData(
                 sensor_id=data["sensor_id"],
                 sensor_version=data["sensor_version"],
                 plant_id=data["plant_id"],
-                time=data["time"],
+                timestamp=data["time"],
                 measures=data["measures"]
                 )
         session.add(new_data)
