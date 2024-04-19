@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, JSON
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import quote_plus
@@ -35,7 +35,7 @@ class SensorData(Base):
     sensor_version = Column(String)
     plant_id = Column(Integer)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    measures = Column(dict)  # Assuming measures is intended to be stored as a JSON-like structure
+    measures = Column(JSON)  # Assuming measures is intended to be stored as a JSON-like structure
     
 # Initialize the engine with the database URI
 engine = create_engine(DATABASE_URI, echo=True)  # Set echo=True for debug
@@ -113,5 +113,5 @@ def delete_sensor_data(id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=1000)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=1000)
     
