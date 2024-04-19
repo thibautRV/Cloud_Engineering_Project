@@ -112,6 +112,7 @@ services:
         required: true
 
   anomaly-detection:
+    image: papyrgb/anomaly-detection:latest
     build:
       context: ./anomaly-detection
     depends_on:
