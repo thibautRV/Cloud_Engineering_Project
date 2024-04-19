@@ -64,21 +64,4 @@ import psycopg2
 from psycopg2 import OperationalError
 
 if __name__ == "__main__":
-    #init_db()
-    def create_conn():
-        conn = None
-        while not conn:
-            try:
-                conn = psycopg2.connect(
-                    dbname="NumericFarm",
-                    user="postgres",
-                    password="datasql",
-                    host="database"
-                )
-                print("Database connection successful")
-            except OperationalError as e:
-                print(e)
-                time.sleep(5)
-        return conn
-
-    conn = create_conn()
+    init_db()

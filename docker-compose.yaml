@@ -31,8 +31,14 @@ services:
     volumes:
       - ./data_processing_service:/usr/src/app/data_processing_service
     depends_on:
-      - database
-      - data-processing-service
+      database:
+        condition: service_completed_successfully
+        required: true
+        restart: true
+      data-processing-service:
+        condition: service_completed_successfully
+        required: true
+        restart: true
     environment:
       - DATABASE_URI=postgresql://postgres:datasql78$$@database:5432/NumericFarm
     networks:
@@ -66,20 +72,23 @@ services:
     user: "1000:1000"
     restart: always
     depends_on:
-      - database
+      database:
+        condition: service_completed_successfully
+        required: true
+        restart: true
 
-  dashboard:
-    image: papyrgb/dashboard-sensor-app:latest
-    ports:
-      - "3000:80"
-    networks:
-      - app-network
-    user: "1000:1000"
-    restart: always
-    depends_on:
-      - database
-      - api-gateway
-      - data-processing-service
+#  dashboard:
+#    image: papyrgb/dashboard-sensor-app:latest
+#    ports:
+#      - "3000:80"
+#    networks:
+#      - app-network
+#    user: "1000:1000"
+#    restart: always
+#    depends_on:
+#      - database
+#      - api-gateway
+#      - data-processing-service
 
   sensor1:
     image: abelfodil/sensor:0.0.1
